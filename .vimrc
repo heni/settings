@@ -8,6 +8,7 @@ set nowrap
 set autoindent
 set nocompatible
 
+set modelines=5
 set mmp=40000
 
 filetype off
