@@ -27,6 +27,7 @@ Plugin 'leafgarland/typescript-vim'
 Plugin 'fatih/vim-go'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'udalov/kotlin-vim'
+Plugin 'pearofducks/ansible-vim.git'
 call vundle#end()
 filetype on
 
