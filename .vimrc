@@ -27,12 +27,15 @@ Plugin 'leafgarland/typescript-vim'
 Plugin 'fatih/vim-go'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'udalov/kotlin-vim'
+Plugin 'pearofducks/ansible-vim'
 call vundle#end()
 filetype on
 
 "nerdtree settings
 nnoremap <C-T> :NERDTreeToggle<CR>
 nnoremap <C-R> :NERDTreeFind<CR>
+"open directory
+nnoremap <C-U> :e %:p:h<CR>
 
 "vim-airline settings
 set laststatus=2
