@@ -7,6 +7,7 @@ set expandtab
 set nowrap
 set autoindent
 set nocompatible
+set backspace=2
 
 set modelines=5
 set mmp=40000
@@ -28,6 +29,8 @@ Plugin 'fatih/vim-go'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'udalov/kotlin-vim'
 Plugin 'pearofducks/ansible-vim'
+Plugin 'LucHermitte/lh-vim-lib'
+Plugin 'LucHermitte/local_vimrc'
 call vundle#end()
 filetype on
 
@@ -42,5 +45,13 @@ set laststatus=2
 let g:airline_theme="silver"
 let g:airline_section_z=airline#section#create(['%3p%%', '%#__accent_bold#%{g:airline_symbols.linenr}%#__accent_bold#%4l%#__restore__#%#__restore__#%#__accent_bold#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#%#__restore__#',':%3v', '(%B)'])
 
+"local_vimrc plugin
+let g:local_vimrc = ['.config', '_vimrc_local.vim']
+
 "restore_vim_cursor settings
 set viminfo='10,\"100,:20,%,n~/.viminfo
+
+"apply local settings
+if filereadable(expand("~/.local/.vimrc"))
+    source ~/.local/.vimrc
+endif
