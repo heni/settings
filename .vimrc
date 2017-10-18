@@ -18,7 +18,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'heni/restore_vim_cursor'
 Plugin 'derekwyatt/vim-scala'
-Plugin 'git://repo.or.cz/vcscommand.git'
+Plugin 'vim-scripts/vcscommand.vim'
 Plugin 'python_fold_compact'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-airline/vim-airline'
