@@ -40,6 +40,8 @@ nnoremap <C-T> :NERDTreeToggle<CR>
 nnoremap <C-R> :NERDTreeFind<CR>
 "open directory
 nnoremap <C-U> :e %:p:h<CR>
+"goto definition/usage
+:map <C-F> [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
 "vim-airline settings
 set laststatus=2
