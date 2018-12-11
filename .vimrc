@@ -38,6 +38,7 @@ filetype on
 "nerdtree settings
 nnoremap <C-T> :NERDTreeToggle<CR>
 nnoremap <C-R> :NERDTreeFind<CR>
+let g:NERDTreeNodeDelimiter="\u00a0"
 "open directory
 nnoremap <C-U> :e %:p:h<CR>
 "goto definition/usage
