@@ -18,6 +18,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'heni/restore_vim_cursor'
 Plugin 'heni/ToggleCppHeader.vim'
+Plugin 'heni/TrimWhiteSpaces.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'vim-scripts/vcscommand.vim'
 Plugin 'python_fold_compact'
