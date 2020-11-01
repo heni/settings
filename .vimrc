@@ -21,7 +21,7 @@ Plugin 'heni/ToggleCppHeader.vim'
 Plugin 'heni/TrimWhiteSpaces.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'vim-scripts/vcscommand.vim'
-Plugin 'python_fold_compact'
+"Plugin 'python_fold_compact'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -35,7 +35,7 @@ Plugin 'pearofducks/ansible-vim'
 Plugin 'LucHermitte/lh-vim-lib'
 Plugin 'LucHermitte/local_vimrc'
 call vundle#end()
-filetype on
+filetype plugin indent on
 
 "nerdtree settings
 nnoremap <C-T> :NERDTreeToggle<CR>
