@@ -16,24 +16,33 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'heni/restore_vim_cursor'
 Plugin 'heni/ToggleCppHeader.vim'
 Plugin 'heni/TrimWhiteSpaces.vim'
-Plugin 'derekwyatt/vim-scala'
-Plugin 'vim-scripts/vcscommand.vim'
-"Plugin 'python_fold_compact'
-Plugin 'scrooloose/nerdtree'
+
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'tfnico/vim-gradle'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'fatih/vim-go'
+Plugin 'scrooloose/nerdtree'
+
+Plugin 'vim-scripts/vcscommand.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'udalov/kotlin-vim'
-Plugin 'chr4/nginx.vim'
-Plugin 'pearofducks/ansible-vim'
 Plugin 'LucHermitte/lh-vim-lib'
 Plugin 'LucHermitte/local_vimrc'
+
+Plugin 'vim-syntastic/syntastic'
+Plugin 'pignacio/vim-yapf-format'
+
+Plugin 'cespare/vim-toml'
+Plugin 'chr4/nginx.vim'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'fatih/vim-go'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'pearofducks/ansible-vim'
+Plugin 'rust-lang/rust.vim'
+Plugin 'tfnico/vim-gradle'
+Plugin 'udalov/kotlin-vim'
+
 call vundle#end()
 filetype plugin indent on
 
@@ -57,7 +66,40 @@ let g:local_vimrc = ['.config', '_vimrc_local.vim']
 "restore_vim_cursor settings
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
+"syntastic setup
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['rust', 'python', 'go'],'passive_filetypes': ['c++'] }
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_python_checkers = ['python3', 'pyflakes', 'mypy']
+
+
 "apply local settings
 if filereadable(expand("~/.local/.vimrc"))
     source ~/.local/.vimrc
 endif
+
+"specific file formatters
+function FormatFile()
+    let filename = expand("%")
+    let extension = fnamemodify(filename, ':e')
+    if extension == "py"
+        "please setup g:yapf_format_yapf_location to the yapf library location
+        call YapfFullFormat()
+    elseif extension == "rs"
+        call rustfmt#Format()
+    else
+        let l:lines = "all"
+        let l:clang_format_path = expand("~/bin/clang-format.py")
+        if filereadable(l:clang_format_path)
+            exec "py3file " . l:clang_format_path
+        else
+            echo "see https://clang.llvm.org/docs/ClangFormat.html#vim-integration for clang-format.py installation"
+        endif
+    endif
+endfunction
