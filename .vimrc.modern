@@ -258,7 +258,7 @@ nmap [c <Plug>(GitGutterPrevHunk)
 
 " Plugin: vim-fswitch (header/source toggle) {{{
 " ============================================================================
-nnoremap <C-H> :FSHere<CR>
+nnoremap <C-H> :silent! FSHere<CR>
 " }}}
 
 " Plugin: local_vimrc {{{
