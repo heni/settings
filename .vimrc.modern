@@ -1,0 +1,282 @@
+" ============================================================================
+" .vimrc — modernized, organized by plugin into folded sections.
+" ============================================================================
+" Navigation: zR open all, zM close all, za toggle current, zj/zk next/prev.
+
+" Bootstrap & plugins {{{
+" ============================================================================
+let mapleader = " "
+let maplocalleader = ","
+
+call plug#begin('~/.vim/plugged')
+
+" UI
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'lambdalisue/fern.vim'
+
+" Navigation / search
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+" Editing quality-of-life
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'derekwyatt/vim-fswitch'
+
+" Per-project local rc
+Plug 'LucHermitte/lh-vim-lib'
+Plug 'LucHermitte/local_vimrc'
+
+" Linter / LSP / formatter
+Plug 'dense-analysis/ale'
+
+" Language syntax (lightweight)
+Plug 'cespare/vim-toml'
+Plug 'chr4/nginx.vim'
+Plug 'derekwyatt/vim-scala'
+Plug 'fatih/vim-go'
+Plug 'leafgarland/typescript-vim'
+Plug 'pearofducks/ansible-vim'
+Plug 'rust-lang/rust.vim'
+Plug 'tfnico/vim-gradle'
+Plug 'udalov/kotlin-vim'
+
+call plug#end()
+" }}}
+
+" Basic options {{{
+" ============================================================================
+set encoding=utf-8
+syntax on
+filetype plugin indent on
+
+" indentation
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab autoindent
+
+" UI
+set scrolloff=8 sidescrolloff=8
+set splitright splitbelow
+set laststatus=2 signcolumn=yes
+
+" search
+set incsearch hlsearch ignorecase smartcase
+
+" buffers
+set hidden nowrap autoread
+
+" undo (persistent)
+set undofile undodir=~/.vim/undo
+silent! call mkdir(expand('~/.vim/undo'), 'p')
+
+" responsiveness
+set updatetime=300 lazyredraw ttimeoutlen=10 mmp=40000
+
+" security
+set nomodeline                                  " was modelines=5; CVE-prone
+
+" clipboard
+if has('clipboard')
+  set clipboard^=unnamedplus
+endif
+
+set viminfo='1000,\"500,:200,%,n~/.viminfo
+" }}}
+
+" Global mappings {{{
+" ============================================================================
+" save / quit
+nnoremap <leader>s :w<CR>
+nnoremap <leader>q :q<CR>
+
+" clear hlsearch
+nnoremap <silent> <leader><CR> :nohlsearch<CR>
+
+" trim trailing whitespace on demand
+nnoremap <leader>w :keeppatterns %s/\s\+$//e<CR>
+
+" navigate loclist (used by ALE, :grep, :vimgrep, etc.)
+nnoremap <silent> ]e :try <Bar> lnext <Bar> catch <Bar> lfirst <Bar> endtry<CR>
+nnoremap <silent> [e :try <Bar> lprev <Bar> catch <Bar> llast <Bar> endtry<CR>
+" }}}
+
+" Plugin: vim-airline {{{
+" ============================================================================
+let g:airline_theme = 'silver'
+let g:airline_powerline_fonts = 0
+let g:airline#extensions#ale#enabled = 1
+let g:airline_section_z = airline#section#create([
+      \ '%3p%% ',
+      \ '%#__accent_bold#%4l%#__restore__#/%L',
+      \ ':%3v',
+      \ ' (%B)'])
+" }}}
+
+" Plugin: fern (file tree drawer) {{{
+" ============================================================================
+let g:fern#default_hidden  = 0
+let g:fern#default_exclude = '\.git$\|node_modules$\|\.pyc$\|__pycache__$'
+let g:fern#renderer        = 'default'
+let g:fern#drawer_width    = 35
+
+nnoremap <silent> <leader>e :Fern . -drawer -toggle<CR>
+nnoremap <silent> <leader>E :Fern . -drawer -reveal=%<CR>
+
+function! s:init_fern() abort
+  nmap <buffer> <CR>     <Plug>(fern-action-open-or-enter)
+  nmap <buffer> <Right>  <Plug>(fern-action-expand)
+  nmap <buffer> <Left>   <Plug>(fern-action-collapse)
+  nmap <buffer> s        <Plug>(fern-action-open:split)
+  nmap <buffer> v        <Plug>(fern-action-open:vsplit)
+  nmap <buffer> t        <Plug>(fern-action-open:tabedit)
+  nmap <buffer> N        <Plug>(fern-action-new-file)
+  nmap <buffer> K        <Plug>(fern-action-new-dir)
+  nmap <buffer> D        <Plug>(fern-action-remove)
+  nmap <buffer> R        <Plug>(fern-action-rename)
+  nmap <buffer> M        <Plug>(fern-action-move)
+  nmap <buffer> r        <Plug>(fern-action-reload)
+  nmap <buffer> H        <Plug>(fern-action-hidden:toggle)
+  nmap <buffer> q        :<C-u>quit<CR>
+endfunction
+
+augroup fern_setup
+  autocmd!
+  autocmd FileType fern call s:init_fern()
+augroup END
+" }}}
+
+" Plugin: fzf {{{
+" ============================================================================
+let g:fzf_layout = { 'down': '20%' }
+command! -bang -nargs=* Rg
+      \ call fzf#vim#grep(
+      \   'rg --column --line-number --no-heading --color=always --smart-case '
+      \   . shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>F :GFiles<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>g :Rg<CR>
+nnoremap <leader>/ :BLines<CR>
+" }}}
+
+" Plugin: ALE (linter + LSP + formatter) {{{
+" ============================================================================
+" --- behaviour ---
+let g:ale_completion_enabled         = 1
+let g:ale_disable_lsp                = 0
+
+let g:ale_lint_on_enter              = 0
+let g:ale_lint_on_text_changed       = 'never'
+let g:ale_lint_on_insert_leave       = 0
+let g:ale_lint_on_save               = 1
+let g:ale_lint_on_filetype_changed   = 1
+let g:ale_fix_on_save                = 0
+
+let g:ale_set_loclist                = 1
+let g:ale_open_list                  = 0
+
+let g:ale_sign_error                 = '✘'
+let g:ale_sign_warning               = '▲'
+let g:ale_echo_msg_format            = '[%linter%] %s [%severity%]'
+
+" --- per-language ---
+let g:ale_linters = {
+\   'python':     ['ruff', 'mypy'],
+\   'cpp':        ['clangd', 'clangtidy'],
+\   'c':          ['clangd', 'clangtidy'],
+\   'rust':       ['analyzer'],
+\   'go':         ['gopls', 'gofmt'],
+\   'sh':         ['shellcheck'],
+\   'tex':        ['chktex'],
+\}
+
+let g:ale_fixers = {
+\   '*':          ['trim_whitespace', 'remove_trailing_lines'],
+\   'python':     ['ruff', 'ruff_format'],
+\   'cpp':        ['clang-format'],
+\   'c':          ['clang-format'],
+\   'rust':       ['rustfmt'],
+\   'go':         ['gofmt', 'goimports'],
+\   'json':       ['jq'],
+\}
+
+let g:ale_cpp_clangd_options = '--background-index --clang-tidy --header-insertion=never'
+
+" --- mappings: lint control ---
+nnoremap <leader>ll :ALELint<CR>
+nnoremap <leader>lo :lopen<CR>
+nnoremap <leader>lc :lclose<CR>
+nnoremap <leader>ld :ALEDetail<CR>
+nnoremap <leader>lf :ALEFix<CR>
+nnoremap <leader>lt :ALEToggleBuffer<CR>
+nnoremap <leader>lT :ALEToggle<CR>
+nnoremap <silent> <leader>lq :pclose<CR>
+
+" --- mappings: LSP ---
+nnoremap <leader>r  :ALEFindReferences<CR>
+nnoremap <leader>n  :ALERename<CR>
+nnoremap <leader>a  :ALECodeAction<CR>
+nnoremap K          :ALEHover<CR>
+
+" goto-definition only in code buffers (preserves ^] in :help)
+augroup ale_goto
+  autocmd!
+  autocmd FileType cpp,c,python,rust,go,sh
+        \ nnoremap <buffer> <C-]> :ALEGoToDefinition<CR>
+augroup END
+" }}}
+
+" Plugin: gitgutter {{{
+" ============================================================================
+let g:gitgutter_map_keys = 0
+nnoremap <leader>hp :GitGutterPreviewHunk<CR>
+nnoremap <leader>hs :GitGutterStageHunk<CR>
+nnoremap <leader>hu :GitGutterUndoHunk<CR>
+nmap ]c <Plug>(GitGutterNextHunk)
+nmap [c <Plug>(GitGutterPrevHunk)
+" }}}
+
+" Plugin: vim-fswitch (header/source toggle) {{{
+" ============================================================================
+nnoremap <C-H> :FSHere<CR>
+" }}}
+
+" Plugin: local_vimrc {{{
+" ============================================================================
+let g:local_vimrc = ['.config', '_vimrc_local.vim']
+" }}}
+
+" Autocmds (filetype tweaks, cursor restore, vim-folding) {{{
+" ============================================================================
+augroup user_setup
+  autocmd!
+
+  " restore cursor on file open (replaces restore_vim_cursor plugin)
+  autocmd BufReadPost *
+        \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit\|rebase'
+        \ |   exe "normal! g`\""
+        \ | endif
+
+  " filetype tweaks
+  autocmd FileType gitcommit setlocal spell
+  autocmd FileType yaml,json,html,css,javascript,typescript
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2
+  autocmd FileType tex,markdown setlocal wrap linebreak spell spelllang=ru,en
+
+  " marker-based folding only in vim files (so this .vimrc folds nicely)
+  autocmd FileType vim setlocal foldmethod=marker foldlevel=99
+augroup END
+" }}}
+
+" Local override (per-machine) {{{
+" ============================================================================
+if filereadable(expand("~/.local/.vimrc"))
+  source ~/.local/.vimrc
+endif
+" }}}

@@ -1,17 +1,70 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
-pushd $(dirname $0)
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-cp -r .vimrc ~/.vimrc
-touch ~/.viminfo
-chown ${USER} ~/.vimrc ~/.viminfo
+install_deps() {
+    sudo apt-get install -y \
+        ripgrep fzf clangd clang-format clang-tidy shellcheck chktex jq
 
-if [ ! -d ~/.vim/bundle/Vundle.vim ]; then
-    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-else
-    pushd ~/.vim/bundle/Vundle.vim
-    git pull
-    popd
-fi
-popd
+    pipx install ruff
+    pipx install mypy
+
+    if command -v rustup >/dev/null 2>&1; then
+        rustup component add rust-analyzer rust-src
+    fi
+    if command -v go >/dev/null 2>&1; then
+        go install golang.org/x/tools/gopls@latest
+    fi
+}
+
+install_vimrc_classic() {
+    cp "${SCRIPT_DIR}/.vimrc.classic" "$HOME/.vimrc"
+    touch "$HOME/.viminfo"
+
+    if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
+        git clone https://github.com/VundleVim/Vundle.vim.git \
+            "$HOME/.vim/bundle/Vundle.vim"
+    else
+        git -C "$HOME/.vim/bundle/Vundle.vim" pull
+    fi
+
+    vim +PluginInstall +qall
+}
+
+install_vimrc_modern() {
+    cp "${SCRIPT_DIR}/.vimrc.modern" "$HOME/.vimrc"
+    touch "$HOME/.viminfo"
+
+    mkdir -p "$HOME/.vim/autoload"
+
+    if [ ! -d "$HOME/.vim/vim-plug" ]; then
+        git clone --depth 1 https://github.com/junegunn/vim-plug.git \
+            "$HOME/.vim/vim-plug"
+    else
+        git -C "$HOME/.vim/vim-plug" pull
+    fi
+    ln -sf "$HOME/.vim/vim-plug/plug.vim" "$HOME/.vim/autoload/plug.vim"
+
+    vim +PlugInstall +qall
+}
+
+case "${1:-}" in
+    --classic)
+        install_deps
+        install_vimrc_classic
+        ;;
+    --modern|"")
+        install_deps
+        install_vimrc_modern
+        ;;
+    -h|--help)
+        echo "Usage: $0 [--classic | --modern]"
+        exit 0
+        ;;
+    *)
+        echo "Unknown option: $1" >&2
+        echo "Usage: $0 [--classic | --modern]" >&2
+        exit 2
+        ;;
+esac
