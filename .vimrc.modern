@@ -99,6 +99,13 @@ nnoremap <leader>w :keeppatterns %s/\s\+$//e<CR>
 " navigate loclist (used by ALE, :grep, :vimgrep, etc.)
 nnoremap <silent> ]e :try <Bar> lnext <Bar> catch <Bar> lfirst <Bar> endtry<CR>
 nnoremap <silent> [e :try <Bar> lprev <Bar> catch <Bar> llast <Bar> endtry<CR>
+
+" jump straight to tab N
+nnoremap <leader>1 1gt
+nnoremap <leader>2 2gt
+nnoremap <leader>3 3gt
+nnoremap <leader>4 4gt
+nnoremap <leader>5 5gt
 " }}}
 
 " Plugin: vim-airline {{{
@@ -111,6 +118,11 @@ let g:airline_section_z = airline#section#create([
       \ '%#__accent_bold#%4l%#__restore__#/%L',
       \ ':%3v',
       \ ' (%B)'])
+
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_buffers = 0   " не дублировать буферы там же
+let g:airline#extensions#tabline#tab_nr_type = 1    " номер таба перед именем
 " }}}
 
 " Plugin: fern (file tree drawer) {{{
