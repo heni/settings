@@ -275,4 +275,8 @@ augroup END
 if filereadable(expand("~/.local/.vimrc"))
   source ~/.local/.vimrc
 endif
+
+if filereadable(expand("~/.bash_aliases"))
+  let $BASH_ENV = expand("~/.bash_aliases")
+endif
 " }}}
