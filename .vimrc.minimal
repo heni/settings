@@ -1,0 +1,57 @@
+" ============================================================================
+" .vimrc.minimal — no plugins, for SSH/lab/embedded boxes.
+" Target: low cpu linux machines. Vim 8.2+ assumed.
+" ============================================================================
+
+" --- core ------------------------------------------------------------------
+set encoding=utf-8
+syntax on
+filetype plugin indent on
+
+" --- editing ---------------------------------------------------------------
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab autoindent
+set backspace=indent,eol,start
+set hidden nowrap autoread
+
+" --- search ----------------------------------------------------------------
+set incsearch hlsearch ignorecase smartcase
+
+" --- ui --------------------------------------------------------------------
+set laststatus=2
+set scrolloff=5
+set splitright splitbelow
+set wildmode=longest:full,full
+set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ 0x%B\ %P
+
+" --- ssh / slow-link friendliness ------------------------------------------
+set ttimeoutlen=10            " no ESC delay over network
+set lazyredraw
+set mouse=                    " let terminal handle copy/paste, don't grab it
+
+" --- security --------------------------------------------------------------
+set nomodeline                " modelines have a CVE history
+
+" --- persistent undo -------------------------------------------------------
+set undofile undodir=~/.vim/undo
+silent! call mkdir(expand('~/.vim/undo'), 'p')
+
+" --- viminfo ---------------------------------------------------------------
+set viminfo='100,\"50,:100,%,n~/.viminfo
+
+" --- minimal mappings ------------------------------------------------------
+let mapleader = " "
+nnoremap <silent> <leader><CR> :nohlsearch<CR>
+nnoremap <leader>w :keeppatterns %s/\s\+$//e<CR>
+
+" --- filetype quirks & cursor restore --------------------------------------
+augroup minimal_setup
+  autocmd!
+  autocmd FileType yaml,json,html,css,javascript
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2
+
+  " restore cursor on file open (no plugin needed)
+  autocmd BufReadPost *
+        \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit\|rebase'
+        \ |   exe "normal! g`\""
+        \ | endif
+augroup END

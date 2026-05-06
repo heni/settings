@@ -90,10 +90,6 @@ set viminfo='1000,\"500,:200,%,n~/.viminfo
 
 " Global mappings {{{
 " ============================================================================
-" save / quit
-nnoremap <leader>s :w<CR>
-nnoremap <leader>q :q<CR>
-
 " clear hlsearch
 nnoremap <silent> <leader><CR> :nohlsearch<CR>
 

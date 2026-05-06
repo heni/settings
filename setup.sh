@@ -49,6 +49,11 @@ install_vimrc_modern() {
     vim +PlugInstall +qall
 }
 
+install_vimrc_minimal() {
+    cp "${SCRIPT_DIR}/.vimrc.minimal" "${HOME}/.vimrc"
+    touch "${HOME}/.viminfo"
+}
+
 case "${1:-}" in
     --classic)
         install_deps
@@ -57,6 +62,9 @@ case "${1:-}" in
     --modern|"")
         install_deps
         install_vimrc_modern
+        ;;
+    --minimal)
+        install_vimrc_minimal
         ;;
     -h|--help)
         echo "Usage: $0 [--classic | --modern]"
