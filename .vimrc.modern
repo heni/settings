@@ -124,8 +124,8 @@ let g:fern#default_exclude = '\.git$\|node_modules$\|\.pyc$\|__pycache__$'
 let g:fern#renderer        = 'default'
 let g:fern#drawer_width    = 35
 
-nnoremap <silent> <leader>e :Fern . -drawer -toggle<CR>
-nnoremap <silent> <leader>E :Fern . -drawer -reveal=%<CR>
+nnoremap <silent> <leader>t :Fern . -drawer -toggle<CR>
+nnoremap <silent> <leader>T :Fern . -drawer -reveal=%<CR>
 
 function! s:init_fern() abort
   nmap <buffer> <CR>     <Plug>(fern-action-open-or-enter)
