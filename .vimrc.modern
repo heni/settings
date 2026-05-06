@@ -121,8 +121,8 @@ let g:airline_section_z = airline#section#create([
 
 
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#show_buffers = 0   " не дублировать буферы там же
-let g:airline#extensions#tabline#tab_nr_type = 1    " номер таба перед именем
+let g:airline#extensions#tabline#show_buffers = 0   " don't duplicate buffers in tabline
+let g:airline#extensions#tabline#tab_nr_type = 1    " show tab number before name
 " }}}
 
 " Plugin: fern (file tree drawer) {{{
