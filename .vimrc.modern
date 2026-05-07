@@ -202,10 +202,10 @@ let g:ale_echo_msg_format            = '[%linter%] %s [%severity%]'
 " --- per-language ---
 let g:ale_linters = {
 \   'python':     ['ruff', 'mypy'],
-\   'cpp':        ['clangd', 'clangtidy'],
-\   'c':          ['clangd', 'clangtidy'],
+\   'cpp':        ['clangd'],
+\   'c':          ['clangd'],
 \   'rust':       ['analyzer'],
-\   'go':         ['gopls', 'gofmt'],
+\   'go':         ['gopls'],
 \   'sh':         ['shellcheck'],
 \   'tex':        ['chktex'],
 \}
