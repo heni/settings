@@ -5,7 +5,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 install_deps() {
     sudo apt-get install -y \
-        ripgrep fzf clangd clang-format clang-tidy shellcheck chktex jq
+        ripgrep fzf clangd clang-format clang-tidy shellcheck chktex jq pipx
 
     pipx install ruff
     pipx install mypy
