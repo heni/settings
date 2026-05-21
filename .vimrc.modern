@@ -46,6 +46,8 @@ Plug 'pearofducks/ansible-vim'
 Plug 'rust-lang/rust.vim'
 Plug 'tfnico/vim-gradle'
 Plug 'udalov/kotlin-vim'
+Plug 'lervag/vimtex'
+Plug 'SirVer/ultisnips'
 
 call plug#end()
 " }}}
@@ -106,6 +108,14 @@ nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
 nnoremap <leader>4 4gt
 nnoremap <leader>5 5gt
+
+" trim trailing whitespace, preserving cursor & scroll position
+function! TrimFile() abort
+  let l:view = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:view)
+endfunction
+command! TrimFile call TrimFile()
 " }}}
 
 " Plugin: vim-airline {{{
@@ -259,6 +269,40 @@ nmap [c <Plug>(GitGutterPrevHunk)
 " Plugin: vim-fswitch (header/source toggle) {{{
 " ============================================================================
 nnoremap <C-H> :silent! FSHere<CR>
+" }}}
+
+
+" Plugin: vimtex + UltiSnips (LaTeX) {{{
+" ============================================================================
+" --- vimtex ---
+let g:tex_flavor             = 'latex'        " treat .tex as LaTeX, not plain TeX
+let g:vimtex_view_method     = 'zathura'      " or 'sioyek', 'mupdf', 'general'
+let g:vimtex_quickfix_mode   = 0              " don't auto-open quickfix on errors
+let g:vimtex_compiler_method = 'latexmk'      " default; assumes latexmk installed
+let g:vimtex_mappings_enabled = 1             " keep vimtex's built-in mappings
+
+" Math symbol concealment: \in → ∈, \alpha → α, \sum → ∑, etc.
+" Active only when cursor is on another line.
+augroup vimtex_conceal
+  autocmd!
+  autocmd FileType tex setlocal conceallevel=1
+augroup END
+let g:tex_conceal = 'abdmg'                   " a=accents b=bold d=delim m=math g=greek
+
+" --- UltiSnips ---
+let g:UltiSnipsExpandTrigger       = '<tab>'
+let g:UltiSnipsJumpForwardTrigger  = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+let g:UltiSnipsEditSplit           = 'vertical'
+let g:UltiSnipsSnippetDirectories  = ['UltiSnips']   " ~/.vim/UltiSnips/
+
+" --- spell-fix-on-the-fly (Castel's trick) ---
+" Ctrl-L in insert mode: jump to previous misspelling, pick first suggestion, return.
+augroup tex_spellfix
+  autocmd!
+  autocmd FileType tex,markdown
+        \ inoremap <buffer> <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+augroup END
 " }}}
 
 " Plugin: local_vimrc {{{
